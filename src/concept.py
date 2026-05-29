@@ -1,9 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
 class Concept:
-    question: str
-    conclusion: str
-    why: str = ""
+    filename: str
+    body: str
+    tags: list[str] = field(default_factory=list)
     example: str = ""

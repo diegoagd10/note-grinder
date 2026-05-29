@@ -175,3 +175,15 @@ class TestSave:
 
         assert reloaded.get_field("any") is None
         assert "Body only content" in reloaded.body
+
+    def test_save_list_field_writes_yaml_list(self, tmp_path):
+        path = tmp_path / "note.md"
+        doc = MarkdownDocument.create(path)
+        doc.set_field("tags", ["Software_Design", "Clean_Architecture"])
+        doc.set_body("Body")
+        doc.save()
+
+        content = path.read_text()
+        assert "tags:" in content
+        assert "  - Software_Design" in content
+        assert "  - Clean_Architecture" in content

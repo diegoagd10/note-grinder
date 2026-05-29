@@ -25,7 +25,10 @@ class Pipeline:
         if note.status is Status.GRAMMAR_REVIEWED:
             concepts = self._distiller.distill(note.content)
             filenames = [
-                GranularNote(c, source=note.name).write_to(self._output_dir) for c in concepts
+                GranularNote(
+                    c, parent=note.parent or note.name, chapter=note.chapter
+                ).write_to(self._output_dir)
+                for c in concepts
             ]
             note.add_created_notes(filenames)
             note.mark(Status.DONE)

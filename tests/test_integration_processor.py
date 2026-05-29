@@ -65,8 +65,8 @@ class TestProcessorIntegration:
         make_note(note_path, "Ready", body)
 
         distill_json = (
-            '[{"question": "¿Qué es un objeto?", "conclusion": "Es una instancia.",'
-            ' "why": "", "example": ""}]'
+            '[{"filename": "🧠¿Qué es un objeto?", "body": "Es una instancia de una clase.",'
+            ' "tags": ["OOP"], "example": ""}]'
         )
         mmx.chat.side_effect = [body, distill_json]
 
@@ -86,7 +86,7 @@ class TestProcessorIntegration:
         content = note_path.read_text()
         assert "## Created Notes" in content
 
-        granular_files = list(output_dir.glob("💡_*"))
+        granular_files = list(output_dir.glob("*.md"))
         assert len(granular_files) >= 1
 
     def test_self_stops_after_empty_polls(
@@ -122,8 +122,8 @@ class TestProcessorIntegration:
         )
 
         distill_json = (
-            '[{"question": "¿Qué es un objeto?", "conclusion": "Es una instancia.",'
-            ' "why": "", "example": ""}]'
+            '[{"filename": "🧠¿Qué es un objeto?", "body": "Es una instancia de una clase.",'
+            ' "tags": ["OOP"], "example": ""}]'
         )
         mmx.chat.return_value = distill_json
 

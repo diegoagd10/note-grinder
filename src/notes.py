@@ -49,5 +49,19 @@ class RawNote:
         self._doc.save()
 
     @property
+    def chapter(self) -> str | None:
+        return self._doc.get_field("chapter")
+
+    @property
+    def parent(self) -> str | None:
+        value = self._doc.get_field("parent")
+        if value is None:
+            return None
+        stripped = value.strip('"').strip()
+        if stripped.startswith("[[") and stripped.endswith("]]"):
+            return stripped[2:-2]
+        return stripped
+
+    @property
     def name(self) -> str:
         return self._doc.path.stem

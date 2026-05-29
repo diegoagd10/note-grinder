@@ -4,11 +4,18 @@ from src.concept import Concept
 from src.mmx import MmxClient
 
 _PROMPT = """\
-Distill the arguments in the following content into a JSON array.
-Each element must have these keys: question, conclusion, why, example.
-Respond with ONLY the JSON array — no prose, no markdown fences.
+You are a study-note distiller. Convert raw reading notes into final study notes
+for active recall. For each distinct argument or idea, produce one JSON object:
 
-Content:
+1. filename – Emojis representing the answer + a Spanish active-recall question.
+   Example: "⏰🧠¿Cómo podemos mantener la calma cuando enfrentamos un obstáculo?"
+2. body – A concise Spanish paragraph answering the question. No markdown heading.
+3. tags – Array of 1–3 PascalCase topic strings (e.g. ["Software_Design"]).
+4. example – A concrete analogy or snippet that illustrates the idea. "" if none.
+
+Respond with ONLY a JSON array — no prose, no markdown fences.
+
+Raw notes:
 {content}"""
 
 
@@ -35,9 +42,9 @@ class Distiller:
             items = json.loads(response[start : end + 1])
             return [
                 Concept(
-                    question=item["question"],
-                    conclusion=item["conclusion"],
-                    why=item.get("why", ""),
+                    filename=item["filename"],
+                    body=item["body"],
+                    tags=item.get("tags", []),
                     example=item.get("example", ""),
                 )
                 for item in items

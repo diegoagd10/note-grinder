@@ -13,8 +13,8 @@ def _mmx(response: str) -> MagicMock:
     return client
 
 
-_FULL = [{"question": "Q1", "conclusion": "C1", "why": "W1", "example": "E1"}]
-_MINIMAL = [{"question": "Q2", "conclusion": "C2"}]
+_FULL = [{"filename": "⏰🧠¿Cómo?", "body": "Así.", "tags": ["Soft_Skills"], "example": "Ej."}]
+_MINIMAL = [{"filename": "🧠¿Qué?", "body": "Respuesta."}]
 
 
 class TestDistillError:
@@ -27,24 +27,30 @@ class TestDistiller:
         mmx = _mmx(json.dumps(_FULL))
         result = Distiller(mmx).distill("some content")
 
-        assert result == [Concept(question="Q1", conclusion="C1", why="W1", example="E1")]
+        assert result == [
+            Concept(filename="⏰🧠¿Cómo?", body="Así.", tags=["Soft_Skills"], example="Ej.")
+        ]
 
     def test_prose_before_and_after_array_still_parses(self):
         response = "Here are your concepts:\n" + json.dumps(_FULL) + "\nHope that helps!"
         result = Distiller(_mmx(response)).distill("content")
 
-        assert result == [Concept(question="Q1", conclusion="C1", why="W1", example="E1")]
+        assert result == [
+            Concept(filename="⏰🧠¿Cómo?", body="Así.", tags=["Soft_Skills"], example="Ej.")
+        ]
 
     def test_markdown_fenced_json_still_parses(self):
         response = "```json\n" + json.dumps(_FULL) + "\n```"
         result = Distiller(_mmx(response)).distill("content")
 
-        assert result == [Concept(question="Q1", conclusion="C1", why="W1", example="E1")]
+        assert result == [
+            Concept(filename="⏰🧠¿Cómo?", body="Así.", tags=["Soft_Skills"], example="Ej.")
+        ]
 
-    def test_missing_why_and_example_default_to_empty_string(self):
+    def test_missing_tags_and_example_default_to_empty(self):
         result = Distiller(_mmx(json.dumps(_MINIMAL))).distill("content")
 
-        assert result == [Concept(question="Q2", conclusion="C2", why="", example="")]
+        assert result == [Concept(filename="🧠¿Qué?", body="Respuesta.", tags=[], example="")]
 
     def test_no_brackets_raises_distill_error(self):
         with pytest.raises(DistillError):
@@ -55,7 +61,7 @@ class TestDistiller:
             Distiller(_mmx("[not valid json}")).distill("content")
 
     def test_missing_required_field_raises_distill_error(self):
-        bad = json.dumps([{"question": "Q only"}])
+        bad = json.dumps([{"filename": "⏰🧠¿Cómo?"}])
         with pytest.raises(DistillError):
             Distiller(_mmx(bad)).distill("content")
 

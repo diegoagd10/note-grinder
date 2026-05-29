@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 class MarkdownDocument:
-    def __init__(self, path: Path, frontmatter: dict[str, str], body: str) -> None:
+    def __init__(self, path: Path, frontmatter: dict[str, str | list[str]], body: str) -> None:
         self._path = path
         self._frontmatter = frontmatter
         self._body = body
@@ -55,7 +55,7 @@ class MarkdownDocument:
     def get_field(self, name: str) -> str | None:
         return self._frontmatter.get(name)
 
-    def set_field(self, name: str, value: str) -> None:
+    def set_field(self, name: str, value: str | list[str]) -> None:
         self._frontmatter[name] = value
 
     def set_body(self, text: str) -> None:
@@ -69,7 +69,12 @@ class MarkdownDocument:
         if self._frontmatter:
             lines = ["---"]
             for key, value in self._frontmatter.items():
-                lines.append(f"{key}: {value}")
+                if isinstance(value, list):
+                    lines.append(f"{key}:")
+                    for item in value:
+                        lines.append(f"  - {item}")
+                else:
+                    lines.append(f"{key}: {value}")
             lines.append("---")
             parts.append("\n".join(lines))
             parts.append("\n" + self._body)

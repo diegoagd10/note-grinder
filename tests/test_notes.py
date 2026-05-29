@@ -8,6 +8,16 @@ process_status: Ready
 Some body content here
 """
 
+NOTE_WITH_CHAPTER_AND_PARENT = """\
+---
+process_status: Ready
+parent: "[[A Philosophy of Software Design]]"
+chapter: 7
+---
+
+Body content.
+"""
+
 NOTE_WITHOUT_STATUS = """\
 ---
 author: Diego
@@ -115,3 +125,35 @@ class TestName:
         note = RawNote.load(path)
 
         assert note.name == "my-note-title"
+
+
+class TestChapter:
+    def test_returns_chapter_string_when_present(self, tmp_path):
+        path = tmp_path / "note.md"
+        path.write_text(NOTE_WITH_CHAPTER_AND_PARENT)
+        note = RawNote.load(path)
+
+        assert note.chapter == "7"
+
+    def test_returns_none_when_chapter_absent(self, tmp_path):
+        path = tmp_path / "note.md"
+        path.write_text(NOTE_WITH_STATUS)
+        note = RawNote.load(path)
+
+        assert note.chapter is None
+
+
+class TestParent:
+    def test_returns_book_name_stripped_of_wikilink_syntax(self, tmp_path):
+        path = tmp_path / "note.md"
+        path.write_text(NOTE_WITH_CHAPTER_AND_PARENT)
+        note = RawNote.load(path)
+
+        assert note.parent == "A Philosophy of Software Design"
+
+    def test_returns_none_when_parent_absent(self, tmp_path):
+        path = tmp_path / "note.md"
+        path.write_text(NOTE_WITH_STATUS)
+        note = RawNote.load(path)
+
+        assert note.parent is None

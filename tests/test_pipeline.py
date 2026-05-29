@@ -10,8 +10,8 @@ from src.pipeline import Pipeline
 # ── shared fixtures ──────────────────────────────────────────────────────────
 
 CONCEPTS = [
-    Concept(question="¿Qué es Python?", conclusion="Un lenguaje interpretado."),
-    Concept(question="¿Qué es una clase?", conclusion="Una plantilla de objetos."),
+    Concept(filename="⏰🧠¿Qué es Python?", body="Un lenguaje interpretado de alto nivel."),
+    Concept(filename="🏗️¿Qué es una clase?", body="Una plantilla para crear objetos."),
 ]
 
 NOTE_READY = """\
@@ -170,5 +170,4 @@ def test_created_notes_section_appears_in_note_body(tmp_path, grammar, distiller
     reloaded = RawNote.load(path)
     assert "## Created Notes" in reloaded.content
     for concept in CONCEPTS:
-        sanitized = concept.question.replace("/", "-").replace("\\", "-").replace(" ", "_")
-        assert sanitized in reloaded.content
+        assert concept.filename in reloaded.content
